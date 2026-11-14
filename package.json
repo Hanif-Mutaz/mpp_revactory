@@ -1,16 +1,16 @@
 {
   "name": "mpp-production-rebuild",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "node --watch src/server.js",
-    "start": "node src/server.js",
-    "db:migrate": "node src/db/migrate.js",
-    "seed": "node src/db/seed.js",
+    "dev": "node --env-file=.env --watch src/server.js",
+    "start": "node --env-file=.env src/server.js",
+    "db:migrate": "node --env-file=.env src/db/migrate.js",
+    "seed": "node --env-file=.env src/db/seed.js",
     "test": "node --test --test-reporter=spec tests/*.test.js tests/unit/*.test.js",
     "check": "node --check src/server.js && node --check public/assets/js/app.js"
   },
