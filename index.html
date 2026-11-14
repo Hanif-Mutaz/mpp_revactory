@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MPP</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font:13px/1.45 "Segoe UI",system-ui,sans-serif;color:#1f2933;background:#f3f5f7}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+.side{background:#1e2a36;color:#c9d3dc;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{padding:16px 18px;font-weight:700;color:#fff;font-size:15px;border-bottom:1px solid #2b3946}
+.brand span{display:block;font-weight:400;font-size:11px;color:#8a9aa9}
+nav{flex:1;overflow:auto;padding:6px 0 12px}
+.grp{padding:14px 18px 4px;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#7d8d9c}
+nav a{display:block;padding:7px 18px 7px 22px;color:#c9d3dc;text-decoration:none;border-left:3px solid transparent}
+nav a:hover{background:#243342}
+nav a.on{background:#2a3b4c;color:#fff;border-left-color:#4f9bd1}
+.side-foot{padding:12px 18px;border-top:1px solid #2b3946;font-size:12px}
+.side-foot select{width:100%;margin-top:4px}
+select,input{font:inherit;padding:5px 7px;border:1px solid #c5ced6;border-radius:3px;background:#fff;color:inherit}
+.top{display:flex;justify-content:space-between;align-items:center;padding:10px 22px;background:#fff;border-bottom:1px solid #dde3e8;position:sticky;top:0;z-index:2}
+.crumb{color:#6b7a88}.crumb b{color:#1f2933;font-weight:600}
+.top-r{display:flex;align-items:center;gap:12px;color:#4a5a68;font-size:12px}
+.url{font-family:Consolas,monospace;font-size:11.5px;background:#eef2f5;padding:3px 8px;border-radius:3px;color:#405060}
+#view{padding:20px 22px;max-width:1180px}
+h1{font-size:18px;margin:0 0 2px;font-weight:600}
+.sub{color:#6b7a88;margin:0 0 16px}
+.card{background:#fff;border:1px solid #dde3e8;border-radius:4px;padding:14px 16px;margin-bottom:14px}
+.card h3{margin:0 0 10px;font-size:13.5px;font-weight:600}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid #dde3e8;border-radius:4px;padding:12px 14px}
+.kpi .n{font-size:22px;font-weight:600}.kpi .l{color:#6b7a88;font-size:12px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #dde3e8}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid #e6ebef;vertical-align:top}
+th{background:#f7f9fa;font-weight:600;font-size:12px;color:#4a5a68}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:1px 8px;border-radius:10px;font-size:11px;background:#e8edf1;color:#4a5a68;white-space:nowrap}
+.tag.ok{background:#e3f2e8;color:#23633a}.tag.warn{background:#fdf1dc;color:#8a5a0b}.tag.bad{background:#fbe4e4;color:#9b2c2c}
+.filters{display:flex;gap:10px;align-items:flex-end;margin-bottom:12px;flex-wrap:wrap}
+.filters label{display:flex;flex-direction:column;font-size:11.5px;color:#6b7a88;gap:3px}
+.btn{padding:6px 12px;border:1px solid #c5ced6;background:#fff;border-radius:3px;cursor:pointer;font:inherit;color:inherit}
+.btn:hover{background:#f3f5f7}
+.btn.pri{background:#1f5f8b;border-color:#1f5f8b;color:#fff}
+.btn.sm{padding:2px 8px;font-size:12px}
+.tabs{display:flex;border-bottom:1px solid #dde3e8;margin-bottom:14px;flex-wrap:wrap}
+.tabs a{padding:8px 14px;color:#4a5a68;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs a.on{color:#1f5f8b;border-bottom-color:#1f5f8b;font-weight:600}
+.scanbox input{width:100%;font-size:22px;padding:12px 14px;letter-spacing:.05em}
+.result{border:1px solid #dde3e8;border-left:5px solid;padding:12px 14px;margin-top:12px;background:#fff;border-radius:3px}
+.result.ok{border-left-color:#2f8a4f}.result.warn{border-left-color:#c98a14}.result.bad{border-left-color:#c53030}
+.result .t{font-weight:700;font-size:15px;margin-bottom:2px}
+.result.ok .t{color:#23633a}.result.warn .t{color:#8a5a0b}.result.bad .t{color:#9b2c2c}
+.lines{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.lines label{display:flex;gap:8px;align-items:center;border:1px solid #dde3e8;padding:9px 10px;border-radius:3px;background:#fff;cursor:pointer}
+.form{display:grid;grid-template-columns:260px 280px;gap:10px 14px;align-items:center}
+.form .hint{grid-column:2;font-size:11.5px;color:#6b7a88;margin-top:-6px}
+.muted{color:#6b7a88}.note{font-size:12px;color:#6b7a88;margin-top:8px}
+.empty{padding:40px;text-align:center;color:#6b7a88}
+.prio{font-weight:600;color:#1f5f8b;width:44px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">MPP<span>Man Power Planner</span></div>
+    <nav id="nav"></nav>
+    <div class="side-foot">
+      <span class="muted">Simulasi role (prototype)</span>
+      <select id="roleSel" onchange="setRole(this.value)">
+        <option value="ADMIN">Admin</option>
+        <option value="LEADER">Leader</option>
+        <option value="OPERATOR">Operator</option>
+      </select>
+    </div>
+  </aside>
+  <main>
+    <header class="top">
+      <div class="crumb" id="crumb"></div>
+      <div class="top-r"><span>Shift 1 · 14 Nov 2026</span><span class="url" id="urlView"></span></div>
+    </header>
+    <section id="view"></section>
+  </main>
+</div>
+
+<script>
+/* ---------- data dummy ---------- */
+const EMP=[
+ ['10231','Andi Saputra','Molding','OPERATOR','SHIFT','A','Aktif'],
+ ['10244','Rina Marlina','Molding','INSPECTOR','SHIFT','A','Aktif'],
+ ['10258','Dedi Kurniawan','Molding','CELL LEADER','SHIFT','A','Aktif'],
+ ['10302','Siti Rahma','Assembly','OPERATOR','SHIFT','B','Aktif'],
+ ['10317','Yoga Pratama','Assembly','OPERATOR','SHIFT','B','Tidak Aktif'],
+ ['20011','Fajar Nugraha','Office','STAF','NON SHIFT','-','Aktif']
+];
+const LINES=[['MLD-01','Molding',4,1,1],['MLD-02','Molding',3,1,1],['MLD-03','Molding',3,1,0],['ASY-01','Assembly',5,1,1],['ASY-02','Assembly',4,1,1]];
+const SKILL={
+ '10231':[['MLD-01','OPERATOR'],['MLD-02','OPERATOR'],['MLD-02','INSPECTOR']],
+ '10244':[['MLD-02','INSPECTOR'],['MLD-01','INSPECTOR']],
+ '10302':[['ASY-01','OPERATOR'],['ASY-02','OPERATOR']]
+};
+const ATT=[
+ ['10258','Dedi Kurniawan','1','07:41','MLD-01 / CELL LEADER','Ditempatkan'],
+ ['10231','Andi Saputra','1','07:48','MLD-01 / OPERATOR','Ditempatkan'],
+ ['10302','Siti Rahma','1','07:52','-','Waiting'],
+ ['10244','Rina Marlina','1','08:17','MLD-02 / INSPECTOR','Terlambat']
+];
+const PLAN={'2026-11-14|1':['MLD-01','MLD-02','ASY-01','ASY-02']};
+const scanLog=[];
+
+/* ---------- helpers ---------- */
+const tbl=(h,rows)=>rows.length?`<table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>`:`<div class="card empty">Tidak ada data.</div>`;
+const tag=(t,c='')=>`<span class="tag ${c}">${t}</span>`;
+const stTag=s=>tag(s,{Ditempatkan:'ok',Waiting:'warn',Terlambat:'warn','Tidak Aktif':'bad',Aktif:'ok'}[s]||'');
+const shiftSel=(cur,fn)=>`<label>Shift<select onchange="${fn}"><option value="1" ${cur==='1'?'selected':''}>Shift 1 (08:00–20:00)</option><option value="2" ${cur==='2'?'selected':''}>Shift 2 (20:00–08:00)</option></select></label>`;
+function parse(){const h=location.hash.slice(1)||'';const i=h.indexOf('?');return{path:i<0?h:h.slice(0,i),q:Object.fromEntries(new URLSearchParams(i<0?'':h.slice(i+1)))}}
+function go(path,q={}){const clean=Object.fromEntries(Object.entries(q).filter(([,v])=>v!==''&&v!=null));const s=new URLSearchParams(clean).toString();location.hash=path+(s?'?'+s:'')}
+
+/* ---------- routes ---------- */
+const A=['ADMIN'],AL=['ADMIN','LEADER'],ALL=['ADMIN','LEADER','OPERATOR'];
+const R=(group,label,roles,render,nav=true)=>({group,label,roles,render,nav});
+const ROUTES={
+ '/dashboard':R('Operasional','Dashboard Manpower',AL,pDashboard),
+ '/scan':R('Operasional','Scan Absensi',ALL,pScan),
+ '/plan':R('Operasional','Line Aktif (Daily Plan)',AL,pPlan),
+ '/waiting':R('Operasional','Waiting List',AL,pWaiting),
+ '/attendance':R('Absensi','Data Absensi',AL,pAttendance),
+ '/attendance/corrections':R('Absensi','Koreksi Absensi',A,pCorrections),
+ '/master/employees':R('Master Data','Karyawan',A,pEmployees),
+ '/master/skills':R('Master Data','Skill Matrix',A,pSkills),
+ '/master/lines':R('Master Data','Line & Proses',A,pLines),
+ '/master/cell-leaders':R('Master Data','Shared Cell Leader',A,pCL),
+ '/approvals':R('Persetujuan','Approval',A,pApprovals),
+ '/history/plans':R('Riwayat','Riwayat Daily Plan',AL,pHistPlans),
+ '/history/audit':R('Riwayat','Audit Log',A,pAudit),
+ '/settings':R('Pengaturan','Pengaturan',A,null)
+};
+const SET_TABS=[['shift','Shift & Jendela Scan'],['checkout','Checkout'],['placement','Aturan Penempatan'],['backup','Backup'],['users','User & Role']];
+SET_TABS.forEach(([k,l])=>ROUTES['/settings/'+k]=R('Pengaturan',l,A,()=>pSettings(k),false));
+const NAV_PATHS=Object.keys(ROUTES).filter(p=>ROUTES[p].nav);
+
+let role=localStorage.getItem('mppProtoRole')||'ADMIN';
+function setRole(r){role=r;localStorage.setItem('mppProtoRole',r);buildNav();render()}
+function homeFor(){return NAV_PATHS.find(p=>ROUTES[p].roles.includes(role))}
+
+function buildNav(){
+ let html='',g=null;
+ for(const p of NAV_PATHS){const r=ROUTES[p];if(!r.roles.includes(role))continue;
+  if(r.group!==g){g=r.group;html+=`<div class="grp">${g}</div>`}
+  html+=`<a href="#${p}" data-p="${p}">${r.label}</a>`}
+ document.getElementById('nav').innerHTML=html;
+ document.getElementById('roleSel').value=role;
+}
+
+function render(){
+ let {path,q}=parse();
+ if(!path){location.replace('#'+homeFor());return}
+ if(path==='/settings'){location.replace('#/settings/shift');return}
+ const r=ROUTES[path],view=document.getElementById('view');
+ if(!r){view.innerHTML=`<div class="card empty"><h1>Halaman tidak ditemukan</h1><p>${path}</p><a class="btn" href="#${homeFor()}">Kembali</a></div>`}
+ else if(!r.roles.includes(role)){view.innerHTML=`<div class="card empty"><h1>Tidak punya akses</h1><p>Role ${role} tidak bisa membuka menu ini.</p><a class="btn" href="#${homeFor()}">Ke halaman utama</a></div>`}
+ else view.innerHTML=r.render(q);
+ document.getElementById('crumb').innerHTML=r?`${r.group} › <b>${r.label}</b>`:'';
+ document.getElementById('urlView').textContent=location.hash||'#/';
+ document.title=(r?r.label+' · ':'')+'MPP';
+ document.querySelectorAll('nav a').forEach(a=>{const p=a.dataset.p;a.classList.toggle('on',path===p||(path.startsWith(p+'/')&&!NAV_PATHS.includes(path)))});
+ const f=view.querySelector('[autofocus]');if(f)f.focus();
+}
+
+/* ---------- pages ---------- */
+function pDashboard(q){
+ const s=q.shift||'1';
+ return `<h1>Dashboard Manpower</h1><p class="sub">Kondisi penempatan untuk shift yang dipilih.</p>
+ <div class="filters">${shiftSel(s,"go('/dashboard',{shift:this.value})")}</div>
+ <div class="kpis">
+  <div class="kpi"><div class="n">4</div><div class="l">Hadir</div></div>
+  <div class="kpi"><div class="n">3</div><div class="l">Ditempatkan</div></div>
+  <div class="kpi"><div class="n">1</div><div class="l">Waiting</div></div>
+  <div class="kpi"><div class="n">16</div><div class="l">Slot masih kosong</div></div>
+ </div>
+ ${tbl(['Line','Operator','Inspector','Cell Leader','Status'],[
+  ['MLD-01','1 / 4','0 / 1','Dedi Kurniawan',tag('Kurang 4','bad')],
+  ['MLD-02','0 / 3','1 / 1','Dedi Kurniawan (shared)',tag('Kurang 3','bad')],
+  ['ASY-01','0 / 5','0 / 1','-',tag('Kurang 6','bad')],
+  ['ASY-02','0 / 4','0 / 1','-',tag('Kurang 5','bad')],
+  ['MLD-03','-','-','-',tag('Tidak aktif')]
+ ])}`;
+}
+function pScan(){
+ const last=scanLog[0];
+ return `<h1>Scan Absensi</h1><p class="sub">Scan barcode karyawan. Pastikan hasil scan terlihat di layar.</p>
+ <div class="card scanbox">
+  <input id="scanIn" autofocus placeholder="Scan / ketik NIK lalu Enter" onkeydown="doScan(event)">
+  <div class="note">Coba: 10231 (ditempatkan), 10302 (waiting), 10317 (tidak aktif), angka lain (tidak terdaftar)</div>
+  ${last?`<div class="result ${last.c}"><div class="t">${last.t}</div><div>${last.d}</div><div class="note">${last.time} · NIK ${last.id}</div></div>`:''}
+ </div>
+ <div class="card"><h3>Scan terakhir</h3>${tbl(['Jam','NIK','Hasil','Keterangan'],scanLog.slice(0,8).map(r=>[r.time,r.id,tag(r.t.split(' — ')[0]+(r.c==='warn'?' (waiting)':''),r.c),r.d]))}</div>`;
+}
+function doScan(e){
+ if(e.key!=='Enter')return;
+ const v=e.target.value.trim();if(!v)return;
+ const emp=EMP.find(x=>x[0]===v);let r;
+ if(!emp)r={c:'bad',t:'SCAN DITOLAK',d:`Barcode ${v} tidak terdaftar.`};
+ else if(emp[6]!=='Aktif')r={c:'bad',t:'SCAN DITOLAK',d:`${emp[1]} — status karyawan tidak aktif.`};
+ else if(v==='10302')r={c:'warn',t:'ABSEN BERHASIL — MENUNGGU LINE',d:`${emp[1]} tercatat hadir. Slot skill prioritas (ASY-01 / OPERATOR) penuh, masuk Waiting List.`};
+ else r={c:'ok',t:'ABSEN BERHASIL — DITEMPATKAN',d:`${emp[1]} → ${(SKILL[v]||[['MLD-01',emp[3]]])[0].join(' / ')}`};
+ r.time=new Date().toTimeString().slice(0,8);r.id=v;scanLog.unshift(r);render();
+}
+function pPlan(q){
+ const d=q.date||'2026-11-14',s=q.shift||'1',key=d+'|'+s,act=PLAN[key]||[];
+ return `<h1>Line Aktif (Daily Plan)</h1><p class="sub">Pilih line yang running untuk tanggal dan shift ini.</p>
+ <div class="filters">
+  <label>Tanggal<input type="date" value="${d}" onchange="go('/plan',{date:this.value,shift:'${s}'})"></label>
+  ${shiftSel(s,`go('/plan',{date:'${d}',shift:this.value})`)}
+ </div>
+ <div class="card"><div class="lines">${LINES.map(l=>`<label><input type="checkbox" ${act.includes(l[0])?'checked':''} onchange="togglePlan('${key}','${l[0]}',this.checked)"> <span><b>${l[0]}</b><br><span class="muted">${l[1]} · OPT ${l[2]} · INS ${l[3]} · CL ${l[4]}</span></span></label>`).join('')}</div>
+ <div class="note">${act.length} line aktif. Waiting otomatis ditempatkan setelah plan disimpan.</div>
+ <div style="margin-top:12px"><button class="btn pri">Simpan Plan</button></div></div>`;
+}
+function togglePlan(key,line,on){const a=PLAN[key]||(PLAN[key]=[]);const i=a.indexOf(line);if(on&&i<0)a.push(line);if(!on&&i>=0)a.splice(i,1);render()}
+function pWaiting(){
+ return `<h1>Waiting List</h1><p class="sub">Karyawan hadir yang belum mendapat posisi. Urutan berdasarkan waktu scan, yang paling awal diisi lebih dulu.</p>
+ ${tbl(['#','Jam Scan','NIK','Nama','Skill Prioritas','Alasan',''],[
+  ['1','07:52','10302','Siti Rahma','ASY-01 / OPERATOR','Slot skill prioritas penuh','<button class="btn sm">Pindahkan</button>']
+ ])}`;
+}
+function pAttendance(q){
+ const d=q.date||'2026-11-14',s=q.shift||'1',st=q.status||'';
+ const rows=ATT.filter(r=>r[2]===s&&(!st||r[5]===st));
+ return `<h1>Data Absensi</h1><p class="sub">Absensi per tanggal kerja dan shift.</p>
+ <div class="filters">
+  <label>Tanggal<input type="date" value="${d}" onchange="go('/attendance',{date:this.value,shift:'${s}',status:'${st}'})"></label>
+  ${shiftSel(s,`go('/attendance',{date:'${d}',shift:this.value,status:'${st}'})`)}
+  <label>Status<select onchange="go('/attendance',{date:'${d}',shift:'${s}',status:this.value})">${['','Ditempatkan','Waiting','Terlambat'].map(x=>`<option value="${x}" ${x===st?'selected':''}>${x||'Semua'}</option>`).join('')}</select></label>
+ </div>
+ ${tbl(['NIK','Nama','Shift','Masuk','Penempatan','Status'],rows.map(r=>[r[0],r[1],r[2],r[3],r[4],stTag(r[5])]))}`;
+}
+function pCorrections(){
+ return `<h1>Koreksi Absensi</h1><p class="sub">Absensi yang ditutup otomatis atau perlu diperbaiki. Setiap koreksi wajib mengisi alasan.</p>
+ ${tbl(['NIK','Nama','Tanggal Kerja','Masalah','Status',''],[
+  ['10231','Andi Saputra','13 Nov 2026 · Shift 2','Belum checkout, ditutup otomatis',tag('Perlu koreksi','warn'),'<button class="btn sm">Koreksi</button>']
+ ])}`;
+}
+function pEmployees(q){
+ const s=(q.s||'').toLowerCase();
+ const rows=EMP.filter(e=>!s||e[0].includes(s)||e[1].toLowerCase().includes(s));
+ return `<h1>Karyawan</h1><p class="sub">Master data karyawan. NIK sama dengan barcode.</p>
+ <div class="filters"><label>Cari NIK / nama<input value="${q.s||''}" onchange="go('/master/employees',{s:this.value})"></label><button class="btn pri">+ Tambah Karyawan</button><button class="btn">Import Excel</button></div>
+ ${tbl(['NIK','Nama','Department','Position','Work Type','Group','Status'],rows.map(e=>[...e.slice(0,6),stTag(e[6])]))}`;
+}
+function pSkills(q){
+ const prod=EMP.filter(e=>SKILL[e[0]]);const id=q.emp||prod[0][0];const list=SKILL[id]||[];
+ return `<h1>Skill Matrix</h1><p class="sub">Urutan menentukan prioritas penempatan. Prioritas 1 dicoba lebih dulu.</p>
+ <div class="filters"><label>Karyawan<select onchange="go('/master/skills',{emp:this.value})">${prod.map(e=>`<option value="${e[0]}" ${e[0]===id?'selected':''}>${e[0]} · ${e[1]}</option>`).join('')}</select></label><button class="btn">+ Tambah Skill</button></div>
+ ${tbl(['Prioritas','Line','Proses','Urutan'],list.map((s,i)=>[`<span class="prio">#${i+1}</span>`,s[0],s[1],`<button class="btn sm" ${i===0?'disabled':''} onclick="moveSkill('${id}',${i},-1)">↑</button> <button class="btn sm" ${i===list.length-1?'disabled':''} onclick="moveSkill('${id}',${i},1)">↓</button>`]))}`;
+}
+function moveSkill(id,i,d){const a=SKILL[id];[a[i],a[i+d]]=[a[i+d],a[i]];render()}
+function pLines(){
+ return `<h1>Line & Proses</h1><p class="sub">Kebutuhan manpower per line. Satu proses diisi satu orang.</p>
+ <div class="filters"><button class="btn pri">+ Tambah Line</button></div>
+ ${tbl(['Line','Area','Operator','Inspector','Cell Leader'],LINES.map(l=>[l[0],l[1],l[2],l[3],l[4]]))}`;
+}
+function pCL(){
+ return `<h1>Shared Cell Leader</h1><p class="sub">Main line dan line yang di-cover. Satu line hanya boleh di-cover satu Cell Leader.</p>
+ ${tbl(['Cell Leader','Main Line','Shared Line',''],[['10258 · Dedi Kurniawan','MLD-01','MLD-02, MLD-03','<button class="btn sm">Ubah</button>']])}`;
+}
+function pApprovals(q){
+ const st=q.status||'pending';
+ return `<h1>Approval</h1><p class="sub">Permintaan yang butuh persetujuan admin.</p>
+ <div class="tabs"><a href="#/approvals?status=pending" class="${st==='pending'?'on':''}">Menunggu</a><a href="#/approvals?status=done" class="${st==='done'?'on':''}">Selesai</a></div>
+ ${st==='pending'?tbl(['Jenis','Detail','Diajukan','Waktu',''],[
+  ['Pindah tanpa skill','10302 Siti Rahma → MLD-02 / OPERATOR','Leader A','08:21','<button class="btn sm pri">Setujui</button> <button class="btn sm">Tolak</button>'],
+  ['Import karyawan','12 data baru, 3 data berubah','Admin','07:30','<button class="btn sm">Lihat</button>']
+ ]):tbl(['Jenis','Detail','Hasil','Waktu'],[])}`;
+}
+function pHistPlans(){
+ return `<h1>Riwayat Daily Plan</h1><p class="sub">Plan line aktif yang pernah dibuat.</p>
+ ${tbl(['Tanggal','Shift','Line Aktif','Dibuat oleh',''],[
+  ['14 Nov 2026','1','4','Leader A',`<a class="btn sm" href="#/plan?date=2026-11-14&shift=1">Buka</a>`],
+  ['13 Nov 2026','2','3','Leader B',`<a class="btn sm" href="#/plan?date=2026-11-13&shift=2">Buka</a>`]
+ ])}`;
+}
+function pAudit(){
+ return `<h1>Audit Log</h1><p class="sub">Catatan aktivitas pengguna.</p>
+ ${tbl(['Waktu','User','Aktivitas'],[
+  ['14 Nov 08:21','Leader A','Ajukan pindah 10302 ke MLD-02'],
+  ['14 Nov 07:52','Scanner','Scan masuk 10302 → Waiting'],
+  ['14 Nov 07:48','Scanner','Scan masuk 10231 → MLD-01 / OPERATOR']
+ ])}`;
+}
+function pSettings(k){
+ const tabs=`<div class="tabs">${SET_TABS.map(([t,l])=>`<a href="#/settings/${t}" class="${t===k?'on':''}">${l}</a>`).join('')}</div>`;
+ const body={
+  shift:`<div class="form">
+   <label>Shift 1</label><span><input type="time" value="08:00"> – <input type="time" value="20:00"></span>
+   <label>Shift 2</label><span><input type="time" value="20:00"> – <input type="time" value="08:00"></span>
+   <label>Scan dibuka sebelum shift</label><span><input type="number" value="60" style="width:80px"> menit</span>
+   <label>Batas terlambat</label><span><input type="number" value="15" style="width:80px"> menit</span>
+   <label>Scan setelah batas terlambat</label><select><option>Terima, tandai terlambat</option><option>Tolak</option></select>
+   <label>Jam NON SHIFT</label><span><input type="time" value="08:00"> – <input type="time" value="17:00"></span></div>`,
+  checkout:`<div class="form">
+   <label>Mode checkout</label><select><option>Otomatis</option><option>Manual (scan pulang)</option></select>
+   <label>Checkout otomatis</label><span><input type="number" value="0" style="width:80px"> menit setelah shift selesai</span>
+   <label>Absensi lama belum checkout</label><select><option>Tutup otomatis & tandai perlu koreksi</option><option>Tolak scan baru</option></select></div>`,
+  placement:`<div class="form">
+   <label>Pindah ke proses tanpa skill</label><select><option>Boleh dengan warning & approval</option><option>Tidak boleh</option></select>
+   <label>Waiting otomatis ditempatkan</label><select><option>Ya, urut waktu scan</option><option>Tidak, manual</option></select>
+   <label>Waiting dihitung manpower kerja</label><select><option>Tidak</option><option>Ya</option></select>
+   <label>Shared CL dihitung di</label><select><option>Semua line yang di-cover</option><option>Main line saja</option></select></div>`,
+  backup:`<div class="form">
+   <label>Backup otomatis</label><select><option>Setiap hari</option><option>Setiap minggu</option><option>Nonaktif</option></select>
+   <label>Jam backup</label><input type="time" value="23:00">
+   <label>Simpan backup</label><span><input type="number" value="30" style="width:80px"> hari terakhir</span>
+   <label>Backup manual</label><span><button class="btn">Backup sekarang</button></span></div>`,
+  users:tbl(['Username','Nama','Role','Status'],[['admin','Admin Produksi','ADMIN',tag('Aktif','ok')],['leader.a','Leader A','LEADER',tag('Aktif','ok')]])
+ }[k];
+ return `<h1>Pengaturan</h1><p class="sub">Aturan operasional yang bisa diubah tanpa mengubah kode.</p>${tabs}<div class="card">${body}${k!=='users'?'<div style="margin-top:14px"><button class="btn pri">Simpan</button></div>':''}</div>`;
+}
+
+window.addEventListener('hashchange',render);
+buildNav();render();
+</script>
+</body>
+</html>

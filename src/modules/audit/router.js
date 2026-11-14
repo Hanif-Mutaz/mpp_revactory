@@ -1,0 +1,1 @@
+import express from 'express';import {pool} from '../../db/pool.js';import {allow} from '../../middleware/auth.js';import {asyncRoute,ok} from '../../utils/http.js';export const auditRouter=express.Router();auditRouter.get('/',allow('ADMIN','SUPERVISOR'),asyncRoute(async(req,res)=>ok(res,(await pool.query('select * from audit_log order by created_at desc limit 1000')).rows)));

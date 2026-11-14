@@ -1,0 +1,5 @@
+import express from 'express';import {pool} from '../../db/pool.js';import {allow} from '../../middleware/auth.js';import {asyncRoute,ok,AppError} from '../../utils/http.js';
+export const absencesRouter=express.Router();
+absencesRouter.get('/',asyncRoute(async(_req,res)=>ok(res,(await pool.query(`select a.*,e.name from planned_absences a join employees e on e.emp_id=a.emp_id order by start_at desc limit 1000`)).rows)));
+absencesRouter.post('/',allow('ADMIN','LEADER'),asyncRoute(async(req,res)=>{const {empId,startAt,endAt,kind,note}=req.body||{};if(!empId||!startAt||!endAt||!kind)throw new AppError(400,'INVALID_ABSENCE','empId, startAt, endAt, kind wajib.');const q=await pool.query(`insert into planned_absences(emp_id,start_at,end_at,kind,note,created_by) values($1,$2,$3,$4,$5,$6) returning *`,[empId,startAt,endAt,String(kind).toUpperCase(),note||null,req.user.id]);ok(res,q.rows[0],201)}));
+absencesRouter.delete('/:id',allow('ADMIN'),asyncRoute(async(req,res)=>{await pool.query('delete from planned_absences where id=$1',[req.params.id]);ok(res,{deleted:true})}));

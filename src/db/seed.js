@@ -1,0 +1,1 @@
+import bcrypt from 'bcryptjs';import {pool} from './pool.js';const h=await bcrypt.hash('ChangeMe123!',12);await pool.query(`insert into users(username,full_name,password_hash,role) values('admin','MPP Administrator',$1,'ADMIN') on conflict(username) do nothing`,[h]);console.log('seed admin/ChangeMe123! - CHANGE IMMEDIATELY');await pool.end();

@@ -1,0 +1,2 @@
+function must(n){const v=process.env[n];if(!v)throw new Error(`${n} is required`);return v}
+export const env={nodeEnv:process.env.NODE_ENV||'development',port:Number(process.env.PORT||5000),databaseUrl:must('DATABASE_URL'),sessionTtlHours:Number(process.env.SESSION_TTL_HOURS||12),scannerEnabled:process.env.MPP_SCANNER_ENABLED==='1',scannerPort:process.env.MPP_SCANNER_PORT||'',scannerBaud:Number(process.env.MPP_SCANNER_BAUD||9600),deviceToken:process.env.MPP_DEVICE_TOKEN||''};

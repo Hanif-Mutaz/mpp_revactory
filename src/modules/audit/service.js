@@ -1,0 +1,1 @@
+export async function audit(c,{user,action,entityType,entityId,detail={}}){await c.query(`insert into audit_log(actor_id,actor_name,action,entity_type,entity_id,detail) values($1,$2,$3,$4,$5,$6)`,[user?.id||null,user?.full_name||'SYSTEM',action,entityType||null,entityId||null,JSON.stringify(detail)])}

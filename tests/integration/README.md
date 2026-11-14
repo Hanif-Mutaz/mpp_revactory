@@ -1,0 +1,2 @@
+# Integration tests required before production GO
+Use dedicated PostgreSQL test database. Required scenarios: same-slot simultaneous scan; duplicate replay; stale open attendance auto-close; waiting FIFO; CL fallback main->shared; unauthorized master/settings writes; fingerprint bad token; transaction rollback after forced assignment failure; Excel validate-only import; backup restore validation. These are environment-gated and intentionally not faked in sandbox.
